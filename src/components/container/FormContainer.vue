@@ -19,7 +19,9 @@ const props = defineProps<{
     <Card>
       <CardHeader v-if="props.title">
         <CardTitle class="text-primary selection:bg-primary"> {{ props.title }} </CardTitle>
-        <CardDescription class="selection:bg-primary" v-if="props.description"> {{ props.description }} </CardDescription>
+        <CardDescription class="selection:bg-primary" v-if="props.description">
+          {{ props.description }}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <slot />

@@ -5,49 +5,51 @@ import FormContainer from '@/components/container/FormContainer.vue'
 import Button from '@/components/ui/button/Button.vue'
 import Input from '@/components/ui/input/Input.vue'
 import { useApi } from '@/composables/useApi'
-import { VUE_CONFIG } from '@/config/config'
-import type { LoginDTO, LoginResponse } from '@/lib/types/auth/login.type'
+import type { CommonApiResponse, LoginDTO, LoginResponse } from '@/lib/types/auth/login.type'
 import {
   loginValidationSchema,
   type LoginFormData,
 } from '@/schema/validation/login-validation.schema'
+import { AUTH_UTILS } from '@/utils/auth'
+import { validateForm } from '@/utils/parse-validation'
 import { computed, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 
 const loginFormData = reactive<LoginFormData>({ email: '', password: '' })
-const errors = reactive({
+const errors = reactive<LoginFormData>({
   email: '',
   password: '',
 })
 
-const { IDLE, LOADING, SUCCESS, ERROR, error, data, execute } = useApi<LoginResponse>()
+const router = useRouter()
+
+const {
+  isError,
+  isIdle,
+  isLoading,
+  isSuccess,
+  error,
+  data,
+  execute: executeLogin,
+} = useApi<LoginResponse, CommonApiResponse<LoginResponse>>({
+  dataFn: (config) =>
+    apiClient.post<CommonApiResponse<LoginResponse>>({ endpoint: '/auth/login', ...config }),
+})
+
+const user = computed(() => data.value)
 
 const buttonDisabled = computed(
   () =>
-    loginFormData.email.trim() === '' ||
-    loginFormData.password.trim() === '' ||
-    LOADING.value !== null,
+    loginFormData.email.trim() === '' || loginFormData.password.trim() === '' || isLoading.value,
 )
-
-function validateLoginForm(): boolean {
-  const result = loginValidationSchema.safeParse({
-    email: loginFormData.email,
-    password: loginFormData.password,
-  })
-
-  if (!result.success) {
-    result.error.errors.forEach((err) => {
-      errors[err.path[0] as 'email' | 'password'] = err.message
-    })
-    return false
-  } else {
-    return true
-  }
-}
 
 async function handleSubmit(e: SubmitEvent) {
   e.preventDefault()
-  console.log(VUE_CONFIG.BASE_URL, 'BASE URL')
-  const isValidated = validateLoginForm()
+  const isValidated = validateForm<LoginFormData>(
+    { email: loginFormData.email, password: loginFormData.password },
+    errors,
+    loginValidationSchema,
+  )
 
   if (!isValidated) return
 
@@ -56,7 +58,11 @@ async function handleSubmit(e: SubmitEvent) {
     password: loginFormData.password,
   }
 
-  await execute(apiClient.post<LoginResponse>({ endpoint: '/auth/login', data: _payload }))
+  await executeLogin({ data: _payload })
+  if (isSuccess) {
+    AUTH_UTILS.setToken(user.value?.token as string)
+    router.push('/dashboard')
+  }
 }
 </script>
 
@@ -93,7 +99,6 @@ async function handleSubmit(e: SubmitEvent) {
               if (errors.password.trim() !== '') errors.password = ''
             }
           "
-          @blur="validateLoginForm"
         />
         <p class="text-red-500 text-sm" v-if="errors.password">
           {{ errors.password }}
@@ -102,10 +107,10 @@ async function handleSubmit(e: SubmitEvent) {
     </div>
     <template #footer>
       <Button :disabled="buttonDisabled" class="w-full" type="submit">
-        <p v-if="IDLE">Login</p>
-        <p v-if="LOADING">Loading...</p>
-        <p v-if="SUCCESS">Welcome!</p>
-        <p v-if="ERROR && error">{{ error }}</p>
+        <p v-if="isIdle">Login</p>
+        <p v-if="isLoading">Loading...</p>
+        <p v-if="isSuccess">Welcome!</p>
+        <p v-if="isError && error">{{ error }}</p>
       </Button>
     </template>
   </FormContainer>

@@ -13,6 +13,16 @@ interface AuthConfig {
   tokenPrefix?: string
 }
 
+interface RequestConfig {
+  endpoint: string
+  urlParams?: Record<string, string>
+  options?: RequestInit
+}
+
+export interface RequestDataConfig<T = unknown> extends RequestConfig {
+  data?: T
+}
+
 export interface ApiResponse<T> {
   data: T
   status: number
@@ -54,9 +64,10 @@ class ApiClient {
   private async initRequest<T>(
     endpoint: string,
     options: RequestInit,
+    data?: unknown,
   ): Promise<ApiResponse<ApiResponseData<T>>> {
     const url = this.buildUrl(endpoint)
-    const requestOptions = await this.buildRequestOptions(options)
+    const requestOptions = await this.buildRequestOptions(options, data)
 
     try {
       const controller = new AbortController()
@@ -92,7 +103,7 @@ class ApiClient {
     return `${this.config.baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`
   }
 
-  private async buildRequestOptions(options: RequestInit): Promise<RequestInit> {
+  private async buildRequestOptions(options: RequestInit, data?: unknown): Promise<RequestInit> {
     const headers = { ...this.config.defaultHeaders }
 
     if (this.authConfig.tokenProvider) {
@@ -103,8 +114,18 @@ class ApiClient {
       }
     }
 
+    let body: BodyInit | undefined
+
+    if (data instanceof FormData) {
+      body = data
+      delete headers['Content-type']
+    } else if (data !== undefined) {
+      body = JSON.stringify(data)
+    }
+
     return {
       ...options,
+      body,
       headers: {
         ...headers,
         ...options.headers,
@@ -127,47 +148,43 @@ class ApiClient {
     return (await response.text()) as unknown as T
   }
 
-  private jsonStringifyData(data: unknown): string {
-    return JSON.stringify(data)
-  }
-
   async get<T>(endpoint: string, options?: RequestInit): Promise<ApiResult<T>> {
     return this.initRequest(endpoint, { ...options, method: 'GET' })
   }
 
   // endpoint: string, data?: unknown, options?: RequestInit
 
-  async post<T>(config: {
-    endpoint: string
-    urlParams?: Record<string, string>
-    data?: unknown
-    options?: RequestInit
-  }): Promise<ApiResult<T>> {
+  async post<T>(config: RequestDataConfig): Promise<ApiResult<T>> {
+    return this.initRequest(
+      config.endpoint,
+      {
+        ...config.options,
+        method: 'POST',
+      },
+      config.data,
+    )
+  }
+
+  async put<T>(config: RequestDataConfig): Promise<ApiResult<T>> {
+    return this.initRequest(
+      config.endpoint,
+      {
+        ...config.options,
+        method: 'PUT',
+      },
+      config.data,
+    )
+  }
+
+  async patch<T>(config: RequestConfig): Promise<ApiResult<T>> {
     return this.initRequest(config.endpoint, {
       ...config.options,
-      body: config.data ? this.jsonStringifyData(config.data) : undefined,
-      method: 'POST',
-    })
-  }
-
-  async put<T>(endpoint: string, data?: unknown, options?: RequestInit): Promise<ApiResult<T>> {
-    return this.initRequest(endpoint, {
-      ...options,
-      method: 'PUT',
-      body: data ? this.jsonStringifyData(data) : undefined,
-    })
-  }
-
-  async patch<T>(endpoint: string, data?: unknown, options?: RequestInit): Promise<ApiResult<T>> {
-    return this.initRequest(endpoint, {
-      ...options,
       method: 'PATCH',
-      body: data ? this.jsonStringifyData(data) : undefined,
     })
   }
 
-  async delete<T>(endpoint: string, options?: RequestInit): Promise<ApiResult<T>> {
-    return this.initRequest(endpoint, { ...options, method: 'DELETE' })
+  async delete<T>(config: RequestDataConfig): Promise<ApiResult<T>> {
+    return this.initRequest(config.endpoint, { ...config.options, method: 'DELETE' }, config.data)
   }
 }
 

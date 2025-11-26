@@ -1,5 +1,5 @@
-import type { ApiResponse } from '@/api/api'
-import type { Ref } from 'vue'
+import type { ApiResponse, RequestDataConfig } from '@/api/api'
+import type { ComputedRef, Ref } from 'vue'
 
 export type ApiResponseData<T> = {
   success: boolean
@@ -10,20 +10,14 @@ export type ApiResponseData<T> = {
 
 export type ApiResult<T> = ApiResponse<ApiResponseData<T>>
 
-export type ApiRequestState = 'LOADING' | 'IDLE' | 'SUCCESS' | 'ERROR'
-
-export type ApiSuccessState = Extract<ApiRequestState, 'SUCCESS'>
-export type ApiErrorState = Extract<ApiRequestState, 'ERROR'>
-export type ApiIdleState = Extract<ApiRequestState, 'IDLE'>
-export type ApiLoadingState = Extract<ApiRequestState, 'LOADING'>
+export type ApiStatus = 'idle' | 'loading' | 'error' | 'success'
 
 export type UseApiResult<T> = {
-  SUCCESS: Ref<ApiSuccessState | null>
-  ERROR: Ref<ApiErrorState | null>
-  LOADING: Ref<ApiLoadingState | null>
-  IDLE: Ref<ApiIdleState | null>
-  error: Ref<string, string>
-  status: Ref<number | null, number | null>
+  isIdle: ComputedRef<boolean>
+  isLoading: ComputedRef<boolean>
+  isError: ComputedRef<boolean>
+  isSuccess: ComputedRef<boolean>
+  error: Ref<string | null, string | null>
   data: Ref<T | null, T | null>
-  execute: (promise: Promise<ApiResult<T>>) => Promise<void>
+  execute: (config?: Partial<RequestDataConfig>) => Promise<void>
 }
