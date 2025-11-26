@@ -1,6 +1,11 @@
+
+export type CommonApiResponse<T> = {
+  success: boolean;
+  message: string;
+  data: T
+}
+
 export type LoginResponse = {
-  success: boolean
-  message: string
   token: string
   userId: string
   isAdmin: boolean
@@ -8,6 +13,6 @@ export type LoginResponse = {
 }
 
 export type LoginDTO = {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }

@@ -12,7 +12,6 @@ interface handleResponse<T> {
 export async function handleRequest<T>(promise: Promise<ApiResult<T>>): Promise<handleResponse<T>> {
   try {
     const response = await promise
-    console.log('HIT')
     return {
       data: response.data.data as T,
       error: null,
@@ -22,7 +21,6 @@ export async function handleRequest<T>(promise: Promise<ApiResult<T>>): Promise<
     }
   } catch (err) {
     if (err instanceof ApiError) {
-      console.log(err, 'ERROR')
       return {
         data: null,
         success: false,
@@ -31,7 +29,6 @@ export async function handleRequest<T>(promise: Promise<ApiResult<T>>): Promise<
         message: err.message || 'Something went wrong',
       }
     } else {
-      console.log(err, 'ERROR BN')
       return {
         data: null,
         success: false,

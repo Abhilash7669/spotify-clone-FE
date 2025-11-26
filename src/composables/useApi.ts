@@ -1,66 +1,51 @@
+import type { RequestDataConfig } from '@/api/api'
 import { handleRequest } from '@/api/api-wrapper'
-import type {
-  ApiErrorState,
-  ApiIdleState,
-  ApiLoadingState,
-  ApiResult,
-  ApiSuccessState,
-  UseApiResult,
-} from '@/lib/types/api/api.type'
-import { onUnmounted, ref, type Ref } from 'vue'
+import type { ApiResult, ApiStatus, UseApiResult } from '@/lib/types/api/api.type'
+import { computed, onUnmounted, ref, type Ref } from 'vue'
 
-export function useApi<T>(): UseApiResult<T> {
-  const status = ref<number | null>(null)
-  const error = ref<string>('')
-  const toastMessage = ref<string>('')
+export function useApi<T, K>(apiOptions: {
+  dataFn: (config?: Partial<RequestDataConfig>) => Promise<ApiResult<K>>
+}): UseApiResult<T> {
+  const status = ref<ApiStatus>('idle')
+  const error = ref<string | null>(null)
   const data = ref<T | null>(null) as Ref<T | null>
 
-  const SUCCESS = ref<ApiSuccessState | null>(null)
-  const IDLE = ref<ApiIdleState | null>('IDLE')
-  const LOADING = ref<ApiLoadingState | null>(null)
-  const ERROR = ref<ApiErrorState | null>(null)
+  const isIdle = computed(() => status.value === 'idle')
+  const isLoading = computed(() => status.value === 'loading')
+  const isError = computed(() => status.value === 'error')
+  const isSuccess = computed(() => status.value === 'success')
 
-  async function execute(promise: Promise<ApiResult<T>>): Promise<void> {
-    LOADING.value = 'LOADING'
-    IDLE.value = null
+  async function execute(config?: Partial<RequestDataConfig>): Promise<void> {
     data.value = null
+    status.value = 'loading'
     const {
       data: responseData,
-      status: responseStatus,
-      error: responseError,
       success,
       message,
-    } = await handleRequest<T>(promise)
-    console.log(responseError, "RESPONSE ERROR");
+    } = await handleRequest<K>(apiOptions.dataFn(config))
     if (!success) {
-      error.value = responseError?.message || 'Something went wrong'
-      ERROR.value = 'ERROR'
+      error.value = message || 'Something went wrong'
+      status.value = 'error'
     }
 
     if (success) {
-      toastMessage.value = message || ''
-      SUCCESS.value = 'SUCCESS'
-      data.value = responseData
+      data.value = responseData as T
+      status.value = 'success'
     }
-    LOADING.value = null
-    status.value = responseStatus
+    console.log(responseData, 'IN COMPOSABLE')
   }
 
   onUnmounted(() => {
-    SUCCESS.value = null
-    LOADING.value = null
-    ERROR.value = null
-    IDLE.value = 'IDLE'
+    status.value = 'idle'
   })
 
   return {
     execute,
-    ERROR,
-    LOADING,
-    IDLE,
-    SUCCESS,
-    error,
-    status,
+    isError,
+    isIdle,
+    isLoading,
+    isSuccess,
     data,
+    error,
   }
 }
