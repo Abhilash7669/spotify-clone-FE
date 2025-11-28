@@ -1,5 +1,5 @@
 <script setup lang="ts"></script>
 
 <template>
-  <p>Home view not protected route</p>
+  <p>DUmmy protected route</p>
 </template>

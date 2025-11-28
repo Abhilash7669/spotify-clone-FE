@@ -61,7 +61,7 @@ async function handleSubmit(e: SubmitEvent) {
   await executeLogin({ data: _payload })
   if (isSuccess) {
     AUTH_UTILS.setToken(user.value?.token as string)
-    router.push('/dashboard')
+    router.push('/auth/dashboard')
   }
 }
 </script>
