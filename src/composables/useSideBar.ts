@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 
-const DEFAULT_OPEN_STATE: boolean = false
+const DEFAULT_OPEN_STATE: boolean = true
 const isSideBarOpen = ref<boolean>(DEFAULT_OPEN_STATE)
 
 export function useSideBar() {

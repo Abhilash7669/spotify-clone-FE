@@ -32,16 +32,16 @@ onUnmounted(() => {
   <div class="h-dvh">
     <div class="flex h-full">
       <BaseSidebar :side-bar-offset-height="playerBarHeight" />
-      <div class="w-full">
+      <div class="w-full bg-sky-950">
         <RouterView />
       </div>
     </div>
     <div
       id="player-bar"
       ref="player-bar-ref"
-      class="bg-emerald-200 text-black flex items-center justify-center w-full h-[100px] fixed bottom-0 left-0"
+      class="flex items-center justify-center w-full fixed bottom-0 left-0 h-24 bg-player border-t border-border backdrop-blur-lg"
     >
-      Bottom bar
+      Glass Player here
     </div>
   </div>
 </template>
