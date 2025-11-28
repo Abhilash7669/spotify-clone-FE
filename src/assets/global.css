@@ -2,6 +2,9 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+:root {
+  --ease-smooth-out: cubic-bezier(0.25, 1, 0.5, 1);
+}
 /* -----------------------------------------
    TAILWIND v4 THEME TOKENS (FIXED VERSION)
 ------------------------------------------*/
@@ -249,6 +252,52 @@
   --shadow-card: 0px 4px 20px hsl(0 0% 0% / 0.25);
   --shadow-glow: 0px 0px 20px hsl(217 91% 60% / 0.5);
   --shadow-soft: 0 2px 8px hsl(0 0% 0% / 0.2);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(3px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@theme {
+  /* keyframes animation */
+  --animate-fade-in: fade-in 0.3s var(--ease-smooth-out) forwards;
+  --animate-fade-out: fade-out 0.3s ease-in forwards;
+  --animate-slide-up: slide-up 0.4s ease-in forwards;
+  --animate-fade-slide-in: fade-slide-in 0.4s ease-in forwards;
 }
 
 /* -----------------------------------------
