@@ -12,6 +12,7 @@ import {
 } from '@/schema/validation/login-validation.schema'
 import { AUTH_UTILS } from '@/utils/auth'
 import { validateForm } from '@/utils/parse-validation'
+import { Icon } from '@iconify/vue'
 import { computed, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -92,6 +93,7 @@ async function handleSubmit(e: SubmitEvent) {
         <Input
           id="password"
           type="password"
+          autocomplete="off"
           :modal-value="loginFormData.password"
           @update="
             ($event) => {
@@ -108,7 +110,7 @@ async function handleSubmit(e: SubmitEvent) {
     <template #footer>
       <Button :disabled="buttonDisabled" class="w-full" type="submit">
         <p v-if="isIdle">Login</p>
-        <p v-if="isLoading">Loading...</p>
+        <p v-if="isLoading"><Icon icon="eos-icons:loading" class="h-5 w-5 text-white" /> </p>
         <p v-if="isSuccess">Welcome!</p>
         <p v-if="isError && error">{{ error }}</p>
       </Button>
