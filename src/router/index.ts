@@ -22,7 +22,7 @@ const router = createRouter({
       ],
     },
     {
-      path: '/auth',
+      path: '/protected',
       component: AuthLayout,
       children: [
         {
@@ -62,31 +62,25 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  // const token = AUTH_UTILS.getToken()
+  const token = AUTH_UTILS.getToken()
 
-  if(to.path === '/') {
-    next("/auth/dashboard")
+  if (to.matched.some((route) => route.meta.requiresAuth)) {
+    if (token) {
+      next()
+    } else {
+      next('/login')
+    }
   } else {
-    next();
+    if (to.path === '/login' && token) {
+      next('/protected/home')
+    } else if (to.path === '/' && token) {
+      next('/protected/home')
+    } else if (to.path === '/' && !token) {
+      next('/login')
+    } else {
+      next()
+    }
   }
-
-  // if (to.matched.some((route) => route.meta.requiresAuth)) {
-  //   if (token) {
-  //     next()
-  //   } else {
-  //     next('/login')
-  //   }
-  // } else {
-  //   if (to.path === '/login' && token) {
-  //     next('/auth/dashboard')
-  //   }
-  //   else if(to.path === '/' && token) {
-  //     next('/auth/dashboard')
-  //   } 
-  //   else {
-  //     next()
-  //   }
-  // }
 })
 
 export default router

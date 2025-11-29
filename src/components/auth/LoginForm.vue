@@ -60,9 +60,9 @@ async function handleSubmit(e: SubmitEvent) {
   }
 
   await executeLogin({ data: _payload })
-  if (isSuccess) {
+  if (isSuccess && data.value) {
     AUTH_UTILS.setToken(user.value?.token as string)
-    router.push('/auth/dashboard')
+    router.push('/protected/home')
   }
 }
 </script>

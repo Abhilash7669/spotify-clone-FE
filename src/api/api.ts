@@ -108,7 +108,6 @@ class ApiClient {
 
     if (this.authConfig.tokenProvider) {
       const token = await this.authConfig.tokenProvider()
-
       if (token) {
         headers[this.authConfig.tokenHeader!] = `${this.authConfig.tokenPrefix} ${token}`
       }
@@ -148,11 +147,9 @@ class ApiClient {
     return (await response.text()) as unknown as T
   }
 
-  async get<T>(endpoint: string, options?: RequestInit): Promise<ApiResult<T>> {
-    return this.initRequest(endpoint, { ...options, method: 'GET' })
+  async get<T>(config: RequestConfig): Promise<ApiResult<T>> {
+    return this.initRequest(config.endpoint, { ...config.options, method: 'GET' })
   }
-
-  // endpoint: string, data?: unknown, options?: RequestInit
 
   async post<T>(config: RequestDataConfig): Promise<ApiResult<T>> {
     return this.initRequest(
@@ -189,24 +186,17 @@ class ApiClient {
 }
 
 class TokenClass {
-  token: string
-  constructor(token: string) {
-    this.token = token
-  }
-
   getToken() {
     if (typeof window === 'undefined') return null
-
-    return localStorage.getItem(this.token) ?? null
+    return localStorage.getItem(VUE_CONFIG.TOKEN) ?? null
   }
 
   removeToken() {
-    localStorage.removeItem(this.token)
+    localStorage.removeItem(VUE_CONFIG.TOKEN)
   }
 }
 
-const token = new TokenClass(VUE_CONFIG.TOKEN)
-
+const token = new TokenClass()
 export const apiClient = new ApiClient(
   { baseUrl: VUE_CONFIG.BASE_URL },
   { tokenProvider: token.getToken },

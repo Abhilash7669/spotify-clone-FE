@@ -1,5 +1,7 @@
 import { ApiError } from '@/api/api'
 import type { ApiResult } from '@/lib/types/api/api.type'
+import { AUTH_UTILS } from '@/utils/auth'
+import { useRouter } from 'vue-router'
 
 interface handleResponse<T> {
   data: T | null
@@ -10,8 +12,17 @@ interface handleResponse<T> {
 }
 
 export async function handleRequest<T>(promise: Promise<ApiResult<T>>): Promise<handleResponse<T>> {
+  const router = useRouter()
   try {
     const response = await promise
+    /**
+     * Unauthorized Guard Safe
+     */
+    if (response.status === 401) {
+      AUTH_UTILS.removeToken()
+      router.push('/login')
+    }
+    // pass
     return {
       data: response.data.data as T,
       error: null,

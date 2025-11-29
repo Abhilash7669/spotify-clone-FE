@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseSidebar from '@/components/common/sidebar/BaseSidebar.vue'
+import BaseTopBar from '@/components/common/topbar/BaseTopBar.vue'
 import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 
 const playerBarTemplateRef = useTemplateRef('player-bar-ref')
@@ -31,8 +32,11 @@ onUnmounted(() => {
 <template>
   <div class="h-dvh">
     <div class="flex h-full">
-      <BaseSidebar :side-bar-offset-height="playerBarHeight" />
-      <div class="w-full bg-sky-950">
+      <BaseSidebar class="sticky left-0 top-0" :side-bar-offset-height="playerBarHeight" />
+      <div class="w-full h-screen bg-background p-4">
+        <BaseTopBar
+          class="sticky top-0 left-0 z-10"
+        />
         <RouterView />
       </div>
     </div>
