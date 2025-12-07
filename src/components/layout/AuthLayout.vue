@@ -2,32 +2,32 @@
 import BaseGlassPlayer from '@/components/BaseGlassPlayer.vue'
 import BaseSidebar from '@/components/common/sidebar/BaseSidebar.vue'
 import BaseTopBar from '@/components/common/topbar/BaseTopBar.vue'
-import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { ref } from 'vue'
 
-const playerBarTemplateRef = useTemplateRef('player-bar-ref')
-const observer = ref<ResizeObserver | undefined>()
+// const playerBarTemplateRef = useTemplateRef('player-bar-ref')
+// const observer = ref<ResizeObserver | undefined>()
 const playerBarHeight = ref<number>(0)
 
-onMounted(() => {
-  if (!playerBarTemplateRef.value) return
+// onMounted(() => {
+//   if (!playerBarTemplateRef.value) return
 
-  observer.value = new ResizeObserver((entries: Array<ResizeObserverEntry>) => {
-    for (const entry of entries) {
-      const element = entry.target
+//   observer.value = new ResizeObserver((entries: Array<ResizeObserverEntry>) => {
+//     for (const entry of entries) {
+//       const element = entry.target
 
-      if (element.id === 'player-bar') {
-        const { height } = entry.contentRect
-        playerBarHeight.value = height
-      }
-    }
-  })
+//       if (element.id === 'player-bar') {
+//         const { height } = entry.contentRect
+//         playerBarHeight.value = height
+//       }
+//     }
+//   })
 
-  observer.value.observe(playerBarTemplateRef.value)
-})
+//   observer.value.observe(playerBarTemplateRef.value)
+// })
 
-onUnmounted(() => {
-  if (observer.value) observer.value.disconnect()
-})
+// onUnmounted(() => {
+//   if (observer.value) observer.value.disconnect()
+// })
 </script>
 
 <template>

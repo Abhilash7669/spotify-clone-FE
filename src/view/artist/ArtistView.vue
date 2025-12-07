@@ -1,35 +1,31 @@
 <script setup lang="ts">
-import { apiClient } from '@/api/api';
-import { useApi } from '@/composables/useApi';
-import { usePlayerStore } from '@/store/usePlayerStore';
-import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 
 const route = useRoute();
-const selectedSong = ref<string | undefined>()
+// const selectedSong = ref<string | undefined>()
 
 
-const playerStore = usePlayerStore();
+// const playerStore = usePlayerStore();
 
-const { data, isLoading, error, isError, execute, isSuccess} = useApi({
-  dataFn: (config) => apiClient.get({
-    endpoint: `/artists/${route.params.id}`,
-    ...config
-  })
-});
-const artistData = computed(() => data.value);
+// const { data, isLoading, error, isError, execute, isSuccess} = useApi({
+//   dataFn: (config) => apiClient.get({
+//     endpoint: `/artists/${route.params.id}`,
+//     ...config
+//   })
+// });
+// const artistData = computed(() => data.value);
 
-onMounted(async() => {
-  await execute();
-  if(isSuccess) console.log(artistData.value, "DAA=TA")
-})
+// onMounted(async() => {
+//   await execute();
+//   if(isSuccess) console.log(artistData.value, "DAA=TA")
+// })
 
-function handleSelectSong(data: {audioURL: string, title: string; coverImage: string }) {
-  playerStore.audioURL = data.audioURL
-  playerStore.title = data.title
-  playerStore.coverImage = data.coverImage
-}
+// function handleSelectSong(data: {audioURL: string, title: string; coverImage: string }) {
+//   playerStore.audioURL = data.audioURL
+//   playerStore.title = data.title
+//   playerStore.coverImage = data.coverImage
+// }
 
 
 </script>
@@ -38,7 +34,7 @@ function handleSelectSong(data: {audioURL: string, title: string; coverImage: st
   <p class="mb-12">
     {{ route.params.id }}
   </p>
-  <div class="space-y-4" v-if="isSuccess && artistData">
+  <!-- <div class="space-y-4" v-if="isSuccess && artistData">
     <p>Artist Name: {{ artistData.data.name }}</p>
     <p>
       Songs Listed down here
@@ -52,5 +48,5 @@ function handleSelectSong(data: {audioURL: string, title: string; coverImage: st
         {{ song.title }}
       </li>
     </ul>
-  </div>
+  </div> -->
 </template>
