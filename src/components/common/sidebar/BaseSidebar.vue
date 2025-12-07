@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import LogoutButton from '@/components/auth/LogoutButton.vue';
 import BaseSidebarMenu from '@/components/common/sidebar/BaseSidebarMenu.vue'
 import { useSideBar } from '@/composables/useSideBar'
 import { cn } from '@/utils/cn';
@@ -20,7 +19,7 @@ const { sideBarWidth, toggleSideBar, isSideBarOpen } = useSideBar()
       height: `calc(100dvh - ${props.sideBarOffsetHeight ?? 0}px)`,
       width: `${sideBarWidth}px`,
     }"
-    :class="cn(`transition-all duration-300 whitespace-nowrap flex flex-col bg-sidebar-background border-r border-sidebar-border overflow-hidden gap-4`, props.class)"
+    :class="cn(`transition-all shrink-0 duration-300 whitespace-nowrap flex flex-col bg-sidebar-background border-r border-sidebar-border overflow-hidden gap-4`, props.class)"
   >
     <div
       :class="`flex items-center whitespace-nowrap transition-all duration-300 py-2 delay-300 ${isSideBarOpen ? 'gap-0.5 px-3' : 'gap-0 px-2'}`"
@@ -34,9 +33,6 @@ const { sideBarWidth, toggleSideBar, isSideBarOpen } = useSideBar()
     </div>
     <div>
       <BaseSidebarMenu />
-    </div>
-    <div class="px-3 w-full">
-      <LogoutButton class="w-full" />
     </div>
   </aside>
 </template>

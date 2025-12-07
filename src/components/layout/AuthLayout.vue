@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BaseGlassPlayer from '@/components/BaseGlassPlayer.vue'
 import BaseSidebar from '@/components/common/sidebar/BaseSidebar.vue'
 import BaseTopBar from '@/components/common/topbar/BaseTopBar.vue'
 import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
@@ -31,21 +32,17 @@ onUnmounted(() => {
 
 <template>
   <div class="h-dvh">
-    <div class="flex h-full">
+    <div class="flex h-full w-full">
       <BaseSidebar class="sticky left-0 top-0" :side-bar-offset-height="playerBarHeight" />
-      <div class="w-full h-screen bg-background p-4">
+      <div class="w-full h-screen flex-1 overflow-x-hidden scrollbar-thin bg-background pt-0">
         <BaseTopBar
-          class="sticky top-0 left-0 z-10"
+          class="sticky top-0 left-0 z-20"
         />
-        <RouterView />
+        <div class="p-4 mb-44">
+          <RouterView />
+        </div>
       </div>
     </div>
-    <div
-      id="player-bar"
-      ref="player-bar-ref"
-      class="flex items-center justify-center w-full fixed bottom-0 left-0 h-24 bg-player border-t border-border backdrop-blur-lg"
-    >
-      Glass Player here
-    </div>
+    <BaseGlassPlayer />
   </div>
 </template>

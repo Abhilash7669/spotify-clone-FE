@@ -2,6 +2,9 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Plugin */
+@plugin 'tailwind-scrollbar';
+
 :root {
   --ease-smooth-out: cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -253,6 +256,8 @@
   --shadow-glow: 0px 0px 20px hsl(217 91% 60% / 0.5);
   --shadow-soft: 0 2px 8px hsl(0 0% 0% / 0.2);
 }
+
+
 
 /* Skeleton Shimmer Animation */
 @keyframes shimmer {

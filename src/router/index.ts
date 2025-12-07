@@ -1,5 +1,6 @@
 import AuthLayout from '@/components/layout/AuthLayout.vue'
 import { AUTH_UTILS } from '@/utils/auth'
+import ArtistView from '@/view/artist/ArtistView.vue'
 import CreatePlaylistView from '@/view/CreatePlaylistView.vue'
 import DashboardView from '@/view/DashboardView.vue'
 import HomeView from '@/view/HomeView.vue'
@@ -53,6 +54,11 @@ const router = createRouter({
         {
           path: 'create-playlist',
           component: CreatePlaylistView,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'artist/:id',
+          component: ArtistView,
           meta: { requiresAuth: true },
         },
       ],

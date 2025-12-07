@@ -24,7 +24,7 @@ export interface RequestDataConfig<T = unknown> extends RequestConfig {
 }
 
 export interface ApiResponse<T> {
-  data: T
+  payload: T
   status: number
   headers: Headers
 }
@@ -80,8 +80,12 @@ class ApiClient {
       // parse the response
       const data = await this.parseResponse<ApiResponseData<T>>(response)
 
+      if (!response.ok || !data.success) {
+        throw new ApiError(data.message || 'Something went wrong', response.status || 500)
+      }
+
       return {
-        data,
+        payload: data as ApiResponseData<T>,
         headers: response.headers,
         status: response.status,
       }
@@ -148,7 +152,14 @@ class ApiClient {
   }
 
   async get<T>(config: RequestConfig): Promise<ApiResult<T>> {
-    return this.initRequest(config.endpoint, { ...config.options, method: 'GET' })
+
+    let query: string | undefined;
+
+    if(config.urlParams) {
+      query = new URLSearchParams(config.urlParams).toString();
+    }
+
+    return this.initRequest(`${config.endpoint}?${query}`, { ...config.options, method: 'GET' })
   }
 
   async post<T>(config: RequestDataConfig): Promise<ApiResult<T>> {

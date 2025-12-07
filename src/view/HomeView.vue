@@ -1,8 +1,14 @@
 <script setup lang="ts">
+import ArtistShowcaseView from '@/view/artist/ArtistShowcaseView.vue';
+import SongsShowcase from '@/view/song/SongsShowcase.vue';
+
+
+
 </script>
 
 <template>
-  <main class="h-full">
-    <p class="flex items-center justify-center">This is the Home screen</p>
+  <main class="h-full space-y-12">
+    <ArtistShowcaseView />
+    <SongsShowcase />
   </main>
 </template>

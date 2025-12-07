@@ -1,12 +1,12 @@
 import type { ApiResponse, RequestDataConfig } from '@/api/api'
+// import type { ResponseData } from '@/lib/types/common.type'
 import type { ComputedRef, Ref } from 'vue'
 
 export type ApiResponseData<T> = {
   success: boolean
   title: string
   message: string
-  data?: T
-}
+} & T
 
 export type ApiResult<T> = ApiResponse<ApiResponseData<T>>
 
