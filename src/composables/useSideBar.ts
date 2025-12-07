@@ -4,7 +4,7 @@ const DEFAULT_OPEN_STATE: boolean = true
 const isSideBarOpen = ref<boolean>(DEFAULT_OPEN_STATE)
 
 export function useSideBar() {
-  const DEFAULT_WIDTH: number = 250
+  const DEFAULT_WIDTH: number = 240
   const CLOSED_WIDTH: number = 50
 
   const sideBarWidth = computed(() => {

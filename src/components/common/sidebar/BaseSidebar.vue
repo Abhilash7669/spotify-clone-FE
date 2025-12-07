@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import BaseSidebarMenu from '@/components/common/sidebar/BaseSidebarMenu.vue'
 import { useSideBar } from '@/composables/useSideBar'
+import { cn } from '@/utils/cn';
 import { Icon } from '@iconify/vue'
+import type { HTMLAttributes } from 'vue';
 
 const props = defineProps<{
-  sideBarOffsetHeight?: number
+  sideBarOffsetHeight?: number;
+  class?: HTMLAttributes["class"]
 }>()
 
 const { sideBarWidth, toggleSideBar, isSideBarOpen } = useSideBar()
@@ -16,7 +19,7 @@ const { sideBarWidth, toggleSideBar, isSideBarOpen } = useSideBar()
       height: `calc(100dvh - ${props.sideBarOffsetHeight ?? 0}px)`,
       width: `${sideBarWidth}px`,
     }"
-    :class="`transition-all duration-300 whitespace-nowrap flex flex-col bg-sidebar border-r border-sidebar-border overflow-hidden gap-4`"
+    :class="cn(`transition-all shrink-0 duration-300 whitespace-nowrap flex flex-col bg-sidebar-background border-r border-sidebar-border overflow-hidden gap-4`, props.class)"
   >
     <div
       :class="`flex items-center whitespace-nowrap transition-all duration-300 py-2 delay-300 ${isSideBarOpen ? 'gap-0.5 px-3' : 'gap-0 px-2'}`"

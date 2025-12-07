@@ -5,17 +5,17 @@ import { ref } from 'vue'
 
 const navItems = ref<NavList>([
   {
-    value: '/auth/home',
+    value: '/protected/home',
     label: 'Home',
     icon: 'lucide-lab:home',
   },
   {
-    value: '/auth/search',
+    value: '/protected/search',
     label: 'Search',
     icon: 'lucide:search',
   },
   {
-    value: '/auth/library',
+    value: '/protected/library',
     label: 'Your Library',
     icon: 'lucide:library',
   },
@@ -23,12 +23,12 @@ const navItems = ref<NavList>([
 
 const navItemsB = ref<NavList>([
   {
-    value: '/auth/create-playlist',
+    value: '/protected/create-playlist',
     label: 'Create Playlist',
     icon: 'lucide:plus',
   },
   {
-    value: '/auth/liked-songs',
+    value: '/protected/liked-songs',
     label: 'Liked Songs',
     icon: 'heroicons:heart-solid',
     color: 'text-primary',

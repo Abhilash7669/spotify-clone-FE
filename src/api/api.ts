@@ -24,7 +24,7 @@ export interface RequestDataConfig<T = unknown> extends RequestConfig {
 }
 
 export interface ApiResponse<T> {
-  data: T
+  payload: T
   status: number
   headers: Headers
 }
@@ -80,8 +80,12 @@ class ApiClient {
       // parse the response
       const data = await this.parseResponse<ApiResponseData<T>>(response)
 
+      if (!response.ok || !data.success) {
+        throw new ApiError(data.message || 'Something went wrong', response.status || 500)
+      }
+
       return {
-        data,
+        payload: data as ApiResponseData<T>,
         headers: response.headers,
         status: response.status,
       }
@@ -108,7 +112,6 @@ class ApiClient {
 
     if (this.authConfig.tokenProvider) {
       const token = await this.authConfig.tokenProvider()
-
       if (token) {
         headers[this.authConfig.tokenHeader!] = `${this.authConfig.tokenPrefix} ${token}`
       }
@@ -148,11 +151,16 @@ class ApiClient {
     return (await response.text()) as unknown as T
   }
 
-  async get<T>(endpoint: string, options?: RequestInit): Promise<ApiResult<T>> {
-    return this.initRequest(endpoint, { ...options, method: 'GET' })
-  }
+  async get<T>(config: RequestConfig): Promise<ApiResult<T>> {
 
-  // endpoint: string, data?: unknown, options?: RequestInit
+    let query: string | undefined;
+
+    if(config.urlParams) {
+      query = new URLSearchParams(config.urlParams).toString();
+    }
+
+    return this.initRequest(`${config.endpoint}?${query}`, { ...config.options, method: 'GET' })
+  }
 
   async post<T>(config: RequestDataConfig): Promise<ApiResult<T>> {
     return this.initRequest(
@@ -189,24 +197,17 @@ class ApiClient {
 }
 
 class TokenClass {
-  token: string
-  constructor(token: string) {
-    this.token = token
-  }
-
   getToken() {
     if (typeof window === 'undefined') return null
-
-    return localStorage.getItem(this.token) ?? null
+    return localStorage.getItem(VUE_CONFIG.TOKEN) ?? null
   }
 
   removeToken() {
-    localStorage.removeItem(this.token)
+    localStorage.removeItem(VUE_CONFIG.TOKEN)
   }
 }
 
-const token = new TokenClass(VUE_CONFIG.TOKEN)
-
+const token = new TokenClass()
 export const apiClient = new ApiClient(
   { baseUrl: VUE_CONFIG.BASE_URL },
   { tokenProvider: token.getToken },

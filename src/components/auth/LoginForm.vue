@@ -5,7 +5,7 @@ import FormContainer from '@/components/container/FormContainer.vue'
 import Button from '@/components/ui/button/Button.vue'
 import Input from '@/components/ui/input/Input.vue'
 import { useApi } from '@/composables/useApi'
-import type { CommonApiResponse, LoginDTO, LoginResponse } from '@/lib/types/auth/login.type'
+import type {  LoginDTO, LoginResponse } from '@/lib/types/auth/login.type'
 import {
   loginValidationSchema,
   type LoginFormData,
@@ -32,9 +32,9 @@ const {
   error,
   data,
   execute: executeLogin,
-} = useApi<LoginResponse, CommonApiResponse<LoginResponse>>({
+} = useApi<{data: LoginResponse}>({
   dataFn: (config) =>
-    apiClient.post<CommonApiResponse<LoginResponse>>({ endpoint: '/auth/login', ...config }),
+    apiClient.post<{data: LoginResponse}>({ endpoint: '/auth/login', ...config }),
 })
 
 const user = computed(() => data.value)
@@ -60,9 +60,9 @@ async function handleSubmit(e: SubmitEvent) {
   }
 
   await executeLogin({ data: _payload })
-  if (isSuccess) {
-    AUTH_UTILS.setToken(user.value?.token as string)
-    router.push('/auth/dashboard')
+  if (isSuccess && data.value) {
+    AUTH_UTILS.setToken(user.value?.data.token as string)
+    router.push('/protected/home')
   }
 }
 </script>
