@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { SelectedSong } from '@/lib/types/player.type';
 import type { SongSingleShowcase } from '@/lib/types/song/song.type';
 import { usePlayerStore } from '@/store/usePlayerStore';
 import { Icon } from '@iconify/vue';
@@ -10,11 +11,8 @@ const props = defineProps<{
 const playerStore = usePlayerStore();
 
 
-function handleSelectSong(data: {audioURL: string, title: string; coverImage: string, artistName: string }) {
-  playerStore.audioURL = data.audioURL
-  playerStore.title = data.title
-  playerStore.coverImage = data.coverImage
-  playerStore.artistName = data.artistName
+function handleSelectSong(selectedSong: SelectedSong) {
+  playerStore.handleInsertSingleSong(selectedSong)
 }
 
 
@@ -26,7 +24,8 @@ function handleSelectSong(data: {audioURL: string, title: string; coverImage: st
       audioURL: props.cardData.audioURL,
       title: props.cardData.title,
       coverImage: props.cardData.coverImage,
-      artistName: props.cardData.artist.name
+      artistName: props.cardData.artist.name,
+      id: props.cardData._id
     })"
   >
   <div class="group relative bg-card hover:bg-card/80 rounded-lg p-4 transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/20 animate-fade-in">
@@ -47,7 +46,7 @@ function handleSelectSong(data: {audioURL: string, title: string; coverImage: st
 
     <div class="space-y-1">
       <h3 class="font-semibold truncate">{{ props.cardData.title }}</h3>
-      <p class="text-sm text-subdued truncate">Likes: {{ props.cardData.likes }}</p>
+      <p class="text-xs text-muted-foreground truncate">Duration: {{ props.cardData.duration }}</p>
     </div>
   </div>
   </div>

@@ -11,6 +11,7 @@ import ShowcaseTemplate from '@/components/template/ShowcaseTemplate.vue';
   link=""
   :api-options="{ endpoint: '/songs' }"
   v-slot="{ items }"
+  :limit="10"
 >
   <BaseSongCard
     v-for="song in items"

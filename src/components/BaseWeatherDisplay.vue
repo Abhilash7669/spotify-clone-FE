@@ -26,9 +26,11 @@ onMounted(async() => {
 </script>
 
 <template>
+  <!-- Initial loading state -->
   <div v-if="isLoading && !weatherData">
     <BaseWeatherSkeleton />
   </div>
+  <!-- Success -->
   <div v-if="isSuccess && weatherData" class="flex items-center gap-4 px-4 py-2 rounded-2xl bg-linear-to-r from-primary/10 via-secondary/60 to-primary/10 backdrop-blur-md border border-primary/20 shadow-lg shadow-primary/5">
     <div class="flex flex-col">
       <span class="text-lg font-bold text-foreground leading-tight">{{ weatherData?.data.current.temp_c }}°C</span>
@@ -47,6 +49,7 @@ onMounted(async() => {
       <span>{{ weatherData?.data.current.humidity }}% humidity</span>
     </div>
   </div>
+  <!-- Error -->
   <p class="text-sm text-red-500" v-if="isError && error">
     {{ error }}
   </p>

@@ -10,7 +10,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <ul :class="cn('grid grid-cols-[repeat(auto-fit,minmax(140px,200px))] gap-6 w-full h-full', props.class)">
+  <ul :class="cn('grid grid-cols-[repeat(auto-fit,minmax(140px,220px))] gap-6 w-full h-full', props.class)">
     <slot />
   </ul>
 </template>

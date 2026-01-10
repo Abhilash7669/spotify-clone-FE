@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { apiClient } from '@/api/api';
+import BaseProgrammaticNavigate from '@/components/BaseProgrammaticNavigate.vue';
 import BaseThemeSwitcher from '@/components/BaseThemeSwitcher.vue';
 import BaseWeatherDisplay from '@/components/BaseWeatherDisplay.vue';
 import BaseAvatar from '@/components/common/avatar/BaseAvatar.vue';
@@ -15,7 +16,6 @@ import { computed, onMounted, type HTMLAttributes } from 'vue';
     class?: HTMLAttributes["class"]
   }>()
 
-
   const { data, error, execute, isError, isLoading, isSuccess} = useApi<{ data: AuthUser }>({
     dataFn: () => apiClient.get<{ data: AuthUser }>({endpoint: '/users/me'})
   });
@@ -28,6 +28,7 @@ import { computed, onMounted, type HTMLAttributes } from 'vue';
     await execute();
   })
 
+
 </script>
 
 <template>
@@ -35,6 +36,8 @@ import { computed, onMounted, type HTMLAttributes } from 'vue';
     <p class="text-red-500 text-sm" v-if="isError && error">
       {{ error }}
     </p>
+
+    <BaseProgrammaticNavigate />
     <BaseWeatherDisplay />
     <div class="flex items-center gap-8">
       <h2 v-if="isSuccess && data">

@@ -1,5 +1,6 @@
 import AuthLayout from '@/components/layout/AuthLayout.vue'
 import { AUTH_UTILS } from '@/utils/auth'
+import ArtistDetailShowcaseView from '@/view/artist/ArtistDetailShowcaseView.vue'
 import ArtistView from '@/view/artist/ArtistView.vue'
 import CreatePlaylistView from '@/view/CreatePlaylistView.vue'
 import DashboardView from '@/view/DashboardView.vue'
@@ -59,6 +60,11 @@ const router = createRouter({
         {
           path: 'artist/:id',
           component: ArtistView,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'artist',
+          component: ArtistDetailShowcaseView,
           meta: { requiresAuth: true },
         },
       ],

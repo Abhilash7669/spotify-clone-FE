@@ -7,9 +7,10 @@ import ShowcaseTemplate from '@/components/template/ShowcaseTemplate.vue';
   <!-- @vue-generic {import('@/lib/types/artist.type').ArtistsShowcase} -->
  <ShowcaseTemplate
   :api-options="{ endpoint: '/artists'}"
-  link=""
+  link="/protected/artist"
   title="Popular Artists"
   v-slot="{ items }"
+  :limit="25"
  >
   <BaseArtistCard
     v-for="artist in items"

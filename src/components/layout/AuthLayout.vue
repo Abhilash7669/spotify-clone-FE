@@ -38,7 +38,7 @@ const playerBarHeight = ref<number>(0)
         <BaseTopBar
           class="sticky top-0 left-0 z-20"
         />
-        <div class="p-4 mb-44">
+        <div class="mb-44">
           <RouterView />
         </div>
       </div>

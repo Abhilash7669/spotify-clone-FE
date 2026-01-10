@@ -12,6 +12,9 @@ export type PaginatedApiResponse<T> = {
   page: number
   pages: number
   itemsPerPage: number
+  hasNext: boolean
+  hasPrev: boolean
+  currentItemsInPage: number
   totalCount: number
 }
 

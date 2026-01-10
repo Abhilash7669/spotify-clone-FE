@@ -19,6 +19,11 @@ const navItems = ref<NavList>([
     label: 'Your Library',
     icon: 'lucide:library',
   },
+  {
+    value: '/protected/artist',
+    label: 'Artists',
+    icon: 'ion:people-outline',
+  },
 ])
 
 const navItemsB = ref<NavList>([

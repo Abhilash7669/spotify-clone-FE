@@ -16,6 +16,7 @@ const props = defineProps<{
           <img
             v-if="props.artistCardData.image"
             :src="props.artistCardData?.image"
+            loading="lazy"
             class="w-full h-full object-cover transition-opacity duration-300"
           />
           <span v-else>
@@ -28,7 +29,7 @@ const props = defineProps<{
 
     <div class="space-y-1">
       <h3 class="font-semibold truncate">{{ props.artistCardData.name }}</h3>
-      <p class="text-sm text-subdued truncate">{{ props.artistCardData.bio }}</p>
+      <p class="text-xs text-muted-foreground truncate">{{ props.artistCardData.bio }}</p>
     </div>
   </div>
   </router-link>
