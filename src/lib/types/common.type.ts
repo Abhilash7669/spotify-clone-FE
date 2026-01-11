@@ -18,6 +18,8 @@ export type PaginatedApiResponse<T> = {
   totalCount: number
 }
 
+export type PaginatedSongsResponse<T> = PaginatedApiResponse<T> & { artistTotalCount: number }
+
 // todo: Re-work/delete/re-think the bottom types
 
 export type CommonApiResponse<T> = {

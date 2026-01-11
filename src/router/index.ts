@@ -8,7 +8,7 @@ import HomeView from '@/view/HomeView.vue'
 import LibraryView from '@/view/LibraryView.vue'
 import LikedSongsView from '@/view/LikedSongsView.vue'
 import LoginView from '@/view/LoginView.vue'
-import SearchView from '@/view/SearchView.vue'
+import SongView from '@/view/song/SongView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -38,8 +38,8 @@ const router = createRouter({
           meta: { requiresAuth: true },
         },
         {
-          path: 'search',
-          component: SearchView,
+          path: 'songs',
+          component: SongView,
           meta: { requiresAuth: true },
         },
         {

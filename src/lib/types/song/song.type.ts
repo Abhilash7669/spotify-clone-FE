@@ -4,14 +4,14 @@ export type Song = {
   // todo: Re-declare proper type
   _id: string
   artist: ArtistSongReference
-  title: string
-  coverImage: string
-  genre: string
-  likes: number
-  isExplicit: boolean
   audioURL: string
+  coverImage: string
   duration: number
+  isExplicit: boolean
+  likes: number
   plays: number
+  releaseDate: string
+  title: string
 }
 
 export type SongSingleShowcase = Pick<

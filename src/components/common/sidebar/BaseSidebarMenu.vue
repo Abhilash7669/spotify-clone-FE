@@ -10,9 +10,9 @@ const navItems = ref<NavList>([
     icon: 'lucide-lab:home',
   },
   {
-    value: '/protected/search',
-    label: 'Search',
-    icon: 'lucide:search',
+    value: '/protected/songs',
+    label: 'Songs',
+    icon: 'lucide:music-2',
   },
   {
     value: '/protected/library',
