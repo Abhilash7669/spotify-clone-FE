@@ -8,10 +8,10 @@ import ShowcaseTemplate from '@/components/template/ShowcaseTemplate.vue';
   <!-- @vue-generic {import('@/lib/types/song/song.type').SongsShowcase} -->
 <ShowcaseTemplate
   title="Popular Songs"
-  link=""
+  link="/protected/songs"
   :api-options="{ endpoint: '/songs' }"
   v-slot="{ items }"
-  :limit="10"
+  :limit="5"
 >
   <BaseSongCard
     v-for="song in items"

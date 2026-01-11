@@ -10,7 +10,7 @@ import ShowcaseTemplate from '@/components/template/ShowcaseTemplate.vue';
   link="/protected/artist"
   title="Popular Artists"
   v-slot="{ items }"
-  :limit="25"
+  :limit="5"
  >
   <BaseArtistCard
     v-for="artist in items"

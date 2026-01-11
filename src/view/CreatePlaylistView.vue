@@ -1,7 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import CreatePlaylist from '@/features/playlists/components/CreatePlaylist.vue';
+
+</script>
 
 <template>
-  <main class="h-full flex items-center justify-center">
-    <p class="flex items-center justify-center">Create a playlist</p>
+  <main class="p-4 h-full">
+    <CreatePlaylist />
   </main>
 </template>

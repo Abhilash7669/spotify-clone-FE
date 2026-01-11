@@ -14,11 +14,11 @@ const navItems = ref<NavList>([
     label: 'Songs',
     icon: 'lucide:music-2',
   },
-  {
-    value: '/protected/library',
-    label: 'Your Library',
-    icon: 'lucide:library',
-  },
+  // {
+  //   value: '/protected/library',
+  //   label: 'Your Library',
+  //   icon: 'lucide:library',
+  // },
   {
     value: '/protected/artist',
     label: 'Artists',

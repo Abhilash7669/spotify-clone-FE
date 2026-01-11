@@ -86,20 +86,11 @@ const artistLookups = computed(() => {
 })
 
 onMounted(async () => {
-  await execute({ urlParams: {
+  Promise.all([execute({ urlParams: {
     artist: paginationControls.artist,
     limit: paginationControls.limit.toString(),
-    page: paginationControls.page.toString(),
-    search: paginationControls.search
-  }})
-
-  await executeArtistsLookups()
-  // Promise.all([execute({ urlParams: {
-  //   artist: paginationControls.artist,
-  //   limit: paginationControls.limit.toString(),
-  //   page: paginationControls.page.toString()
-  // }}), executeArtistsLookups()])
-
+    page: paginationControls.page.toString()
+  }}), executeArtistsLookups()])
 })
 
 watch(paginationControls, async () => {
