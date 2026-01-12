@@ -121,7 +121,7 @@ class ApiClient {
 
     if (data instanceof FormData) {
       body = data
-      delete headers['Content-type']
+      delete headers['Content-Type']
     } else if (data !== undefined) {
       body = JSON.stringify(data)
     }

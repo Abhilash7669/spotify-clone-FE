@@ -2,8 +2,10 @@
 import BaseGlassCard from '@/components/BaseGlassCard.vue';
 import BaseImagePicker from '@/components/BaseImagePicker.vue';
 import BaseTextArea from '@/components/ui/BaseTextArea.vue';
+import ButtonGlow from '@/components/ui/button/ButtonGlow.vue';
 import Input from '@/components/ui/input/Input.vue';
 import { useApi } from '@/composables/useApi';
+import { playlistsService } from '@/features/playlists/services/playlits.services';
 import { songsService } from '@/features/songs/service/songs.service';
 import type { PaginatedSongsResponse } from '@/lib/types/common.type';
 import type { Song } from '@/lib/types/song/song.type';
@@ -15,6 +17,9 @@ import { computed, onUnmounted, reactive, ref } from 'vue';
   const isTypingSearch = ref<boolean>(false)
   const timer = ref<number | null>(null);
   const isInteracting = ref<boolean>(false);
+  const clearPreviewUrl = ref<boolean>(false);
+
+  const isModalOpen = ref<boolean>(false);
 
   const playlistData = reactive<{
     name: string;
@@ -28,8 +33,13 @@ import { computed, onUnmounted, reactive, ref } from 'vue';
     collaborators: []
   })
 
+  // fetches searched songs
   const { data, isSuccess, execute, isError, error } = useApi<PaginatedSongsResponse<Array<Song>>>({
     dataFn: async (config) => await songsService.getSongs(config)
+  })
+
+  const { execute: executeCreatePlaylist, isLoading: isCreatingPlaylist, isSuccess: isCreatedPlaylist, isError: isErrorCreatePlaylist, error: createPlaylistError } = useApi({
+    dataFn: async(config) => await playlistsService.createPlaylist(config)
   })
 
   const computedSongSearch = computed(() => data.value)
@@ -62,7 +72,6 @@ import { computed, onUnmounted, reactive, ref } from 'vue';
    * @param song
    */
   function handleAddSong(song: Song) {
-    console.log(song, 'SONG');
     const selectedSong = { _id: song._id, artist: song.artist.name, title: song.title}
     // if song list is empty
     if(playlistData.songs.length === 0) {
@@ -91,6 +100,53 @@ import { computed, onUnmounted, reactive, ref } from 'vue';
     playlistData.songs = playlistData.songs.filter(item => item._id !== songId)
   }
 
+   async function handleCreatePlaylist(){
+    if(!playlistData.songs || playlistData.songs.length === 0) {
+      isModalOpen.value = true
+      return
+    }
+    // map and store only id's
+    const _payload = {
+      songs: playlistData.songs.map(item => item._id),
+      name: playlistData.name,
+      description: playlistData.description,
+      collaborators: playlistData.collaborators
+    }
+
+    const form = new FormData();
+    form.append('name', _payload.name)
+    form.append('description', _payload.description)
+    form.append('isPublic', "false")
+    if(file.value) form.append('coverImage', file.value);
+    form.append('songs', JSON.stringify(_payload.songs))
+    form.append('collaborators', JSON.stringify(_payload.collaborators))
+
+    isModalOpen.value = true
+
+    await executeCreatePlaylist({
+      data: form
+    });
+
+    if(isCreatedPlaylist) {
+      resetFields()
+    }
+
+   }
+
+   function resetFields() {
+      playlistData.name = ''
+      playlistData.songs = []
+      playlistData.collaborators = []
+      playlistData.description = ''
+      file.value = null
+      search.value = ''
+      clearPreviewUrl.value = true
+   }
+
+   function closeModal() {
+    isModalOpen.value = false
+   }
+
   onUnmounted(() => {
     if(timer.value) clearTimeout(timer.value)
   })
@@ -98,6 +154,33 @@ import { computed, onUnmounted, reactive, ref } from 'vue';
 </script>
 
 <template>
+  <div class="fixed top-0 left-0 bg-black/80 z-40 w-full h-full flex items-center justify-center" v-if="isModalOpen">
+    <div class="min-h-40 min-w-60 flex items-center justify-center p-4 rounded-2xl bg-linear-to-bl from-primary/30 to-primary/10 border border-white/10 relative">
+      <div @click="closeModal" class="absolute top-4 right-4 text-muted-foreground cursor-pointer">
+        <Icon icon="ic:baseline-close" width="24" height="24" />
+      </div>
+      <div class="flex flex-col items-center justify-center gap-4" v-if="isCreatingPlaylist">
+        <Icon class="text-foreground animate-spin" icon="lucide:loader" height="44" width="44" />
+        <p>
+          Your playlist is being created...
+        </p>
+      </div>
+      <div class="flex flex-col items-center justify-center gap-2" v-if="isCreatedPlaylist">
+        <p class="text-2xl font-bold">
+          Created!
+        </p>
+        <p class="text-xs text-muted-foreground">
+          Enjoy your very own playlist!
+        </p>
+      </div>
+      <p class="text-red-500" v-if="isErrorCreatePlaylist && createPlaylistError">
+        {{ createPlaylistError }}
+      </p>
+      <p class="text-red-500" v-if="(!isCreatedPlaylist && !isCreatingPlaylist) && playlistData.songs.length === 0">
+        Please add songs to create a playlist
+      </p>
+    </div>
+  </div>
   <section class="space-y-4 pb-44">
     <!-- title/info -->
     <div class="space-y-1">
@@ -109,13 +192,14 @@ import { computed, onUnmounted, reactive, ref } from 'vue';
       </p>
     </div>
     <!-- playlist controllers -->
-    <div class="flex gap-2">
+    <div class="flex gap-6">
       <!-- left -->
-      <div class="space-y-4 min-w-[50%]">
+      <div class="space-y-6 min-w-[50%]">
         <BaseGlassCard class="grid grid-cols-3 gap-6">
           <BaseImagePicker
             @file-select="handleSelectFile"
             @file-unselect="handleRemoveFile"
+            :clear="clearPreviewUrl"
           />
           <div class="w-full col-span-2 space-y-4">
             <Input
@@ -150,7 +234,7 @@ import { computed, onUnmounted, reactive, ref } from 'vue';
                 autocomplete="off"
                 @update="$event => handleDebouncedSearch($event as string)"
               />
-              <div class="absolute top-10 left-0 hidden opacity-0 h-[200px] overflow-y-auto w-full backdrop-blur-lg rounded-xl bg-card border border-white/10 peer-focus:z-20 peer-focus:opacity-100 peer-focus:flex justify-center pt-2 px-2">
+              <div class="absolute top-10 left-0 opacity-0 h-[200px] overflow-y-auto w-full backdrop-blur-lg rounded-xl bg-card border border-white/10 peer-focus:z-20 peer-focus:opacity-100 peer-focus:flex justify-center pt-2 px-2">
                 <div class="flex items-center justify-center" v-if="isTypingSearch">
                   <Icon class="animate-spin" icon="lucide:loader-circle" width="24" height="24" />
                 </div>
@@ -227,9 +311,14 @@ import { computed, onUnmounted, reactive, ref } from 'vue';
         </BaseGlassCard>
       </div>
       <!-- right -->
-       <BaseGlassCard class="flex-1">
-        <p>Right section here</p>
-      </BaseGlassCard>
+       <div class="space-y-4 max-w-2xs w-full">
+         <BaseGlassCard class="w-full h-[90%]">
+          <p>Right section here</p>
+        </BaseGlassCard>
+        <ButtonGlow @disabled="!playlistData.songs || playlistData.songs.length === 0" class="w-full" @click="handleCreatePlaylist">
+          Create Playlist
+        </ButtonGlow>
+       </div>
     </div>
   </section>
 </template>

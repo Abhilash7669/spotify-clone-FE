@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue';
-import { ref, useTemplateRef } from 'vue';
+import { ref, useTemplateRef, watch } from 'vue';
 
+  const props = defineProps<{
+    clear?: boolean
+  }>()
 
   const emits = defineEmits<{
     (event: 'fileSelect', value: File): void
@@ -34,6 +37,12 @@ function handleRemoveFile() {
 function handleInputClick() {
   inputRef.value?.click()
 }
+
+watch(props, () => {
+  if(props.clear) {
+    previewUrl.value = null
+  }
+})
 
 </script>
 
