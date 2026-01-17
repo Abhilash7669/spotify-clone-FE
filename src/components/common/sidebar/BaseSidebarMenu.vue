@@ -38,6 +38,11 @@ const navItemsB = ref<NavList>([
     icon: 'heroicons:heart-solid',
     color: 'text-primary',
   },
+  {
+    value: '/protected/playlist',
+    label: 'Your Playlists',
+    icon: 'iconamoon:playlist-bold',
+  },
 ])
 </script>
 

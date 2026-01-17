@@ -8,6 +8,8 @@ import HomeView from '@/view/HomeView.vue'
 import LibraryView from '@/view/LibraryView.vue'
 import LikedSongsView from '@/view/LikedSongsView.vue'
 import LoginView from '@/view/LoginView.vue'
+import PlaylistDetail from '@/view/playlist/PlaylistDetail.vue'
+import PlaylistView from '@/view/playlist/PlaylistView.vue'
 import SongView from '@/view/song/SongView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -55,6 +57,16 @@ const router = createRouter({
         {
           path: 'create-playlist',
           component: CreatePlaylistView,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'playlist',
+          component: PlaylistView,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'playlist/:id',
+          component: PlaylistDetail,
           meta: { requiresAuth: true },
         },
         {

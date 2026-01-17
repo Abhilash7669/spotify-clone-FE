@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import BaseGlassCard from '@/components/BaseGlassCard.vue';
 import BaseImagePicker from '@/components/BaseImagePicker.vue';
+import BaseSkeleton from '@/components/common/skeleton/BaseSkeleton.vue';
+import BaseBlueGlassDiv from '@/components/ui/BaseBlueGlassDiv.vue';
 import BaseTextArea from '@/components/ui/BaseTextArea.vue';
 import ButtonGlow from '@/components/ui/button/ButtonGlow.vue';
 import Input from '@/components/ui/input/Input.vue';
@@ -9,8 +11,9 @@ import { playlistsService } from '@/features/playlists/services/playlits.service
 import { songsService } from '@/features/songs/service/songs.service';
 import type { PaginatedSongsResponse } from '@/lib/types/common.type';
 import type { Song } from '@/lib/types/song/song.type';
+import { usersService } from '@/service/users.service';
 import { Icon } from '@iconify/vue';
-import { computed, onUnmounted, reactive, ref } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 
   const file = ref<File | null>(null)
   const search = ref<string>('');
@@ -25,7 +28,7 @@ import { computed, onUnmounted, reactive, ref } from 'vue';
     name: string;
     description: string;
     songs: Array<{ _id: string, title: string, artist: string }>
-    collaborators?: Array<string>
+    collaborators?: Array<string>,
   }>({
     name: '',
     description: '',
@@ -34,15 +37,43 @@ import { computed, onUnmounted, reactive, ref } from 'vue';
   })
 
   // fetches searched songs
-  const { data, isSuccess, execute, isError, error } = useApi<PaginatedSongsResponse<Array<Song>>>({
+  const {
+      data,
+      isSuccess,
+      execute,
+      isError,
+      error
+    } = useApi<PaginatedSongsResponse<Array<Song>>>({
     dataFn: async (config) => await songsService.getSongs(config)
   })
 
-  const { execute: executeCreatePlaylist, isLoading: isCreatingPlaylist, isSuccess: isCreatedPlaylist, isError: isErrorCreatePlaylist, error: createPlaylistError } = useApi({
+  const {
+    data: usersLookupsData,
+    isLoading: isUsersLookupsLoading,
+    isSuccess: isUsersLookupsSuccess,
+    execute: executeGetUsersLookups,
+    isError: isUsersLookupsError,
+    error: usersLookupsErrorMessage
+  } = useApi<{ data: Array<{ _id: string, name: string }>}>({
+    dataFn: async (config) => await usersService.getUsersLookups(config)
+  })
+
+  // create playlist api call
+  const {
+    execute: executeCreatePlaylist,
+    isLoading: isCreatingPlaylist,
+    isSuccess: isCreatedPlaylist,
+    isError: isErrorCreatePlaylist,
+    error: createPlaylistError
+  } = useApi({
     dataFn: async(config) => await playlistsService.createPlaylist(config)
   })
 
   const computedSongSearch = computed(() => data.value)
+
+  onMounted(async() => {
+    await executeGetUsersLookups();
+  })
 
   function handleSelectFile(_file: File) {
     file.value = _file
@@ -65,6 +96,24 @@ import { computed, onUnmounted, reactive, ref } from 'vue';
       await execute({ urlParams: { search: value }})
       if(computedSongSearch.value) isTypingSearch.value = false
     }, 500);
+  }
+
+  function handleSelectCollaborators(value: string) {
+    if(playlistData.collaborators?.length === 0) {
+      playlistData.collaborators.push(value)
+      return;
+    }
+
+    // check if there is duplicate
+    const userExists = playlistData.collaborators?.find(item => item === value)
+    if(userExists) {
+      playlistData.collaborators = playlistData.collaborators!.filter(item => item !== value)
+      return
+    }
+
+    // else push into the array
+    playlistData.collaborators?.push(value)
+
   }
 
   /**
@@ -312,8 +361,29 @@ import { computed, onUnmounted, reactive, ref } from 'vue';
       </div>
       <!-- right -->
        <div class="space-y-4 max-w-2xs w-full">
-         <BaseGlassCard class="w-full h-[90%]">
-          <p>Right section here</p>
+         <BaseGlassCard class="w-full h-[90%] p-7">
+          <BaseSkeleton class="h-full" v-if="isUsersLookupsLoading" />
+          <div class="space-y-6" v-if="isUsersLookupsSuccess && usersLookupsData">
+            <div class="flex items-center gap-2">
+              <Icon class="text-accent" icon="charm:people" width="24" height="24" />
+              <h2 class="text-xl font-bold">
+                Add Collaborators
+              </h2>
+            </div>
+            <BaseBlueGlassDiv>
+              <p>
+                You
+              </p>
+              <p class="text-transparent bg-clip-text bg-linear-to-t from-primary to-accent-foreground">
+                Owner
+              </p>
+            </BaseBlueGlassDiv>
+            <ul class="space-y-2">
+              <li :class="`rounded cursor-pointer ${playlistData.collaborators?.includes(user._id) ? 'bg-accent': undefined}`" @click="() => handleSelectCollaborators(user._id)" :key="user._id" v-for="user in usersLookupsData.data">
+                {{ user.name }}
+              </li>
+            </ul>
+          </div>
         </BaseGlassCard>
         <ButtonGlow @disabled="!playlistData.songs || playlistData.songs.length === 0" class="w-full" @click="handleCreatePlaylist">
           Create Playlist
