@@ -12,7 +12,8 @@ const route = useRoute()
 
 const playerStore = usePlayerStore()
 
-const { data, isLoading, isSuccess, execute, error, isError } = useApi({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const { data, isLoading, isSuccess, execute, error, isError } = useApi<any>({
   dataFn: async(config) => await playlistsService.getPlaylist(route.params.id as string, config)
 })
 

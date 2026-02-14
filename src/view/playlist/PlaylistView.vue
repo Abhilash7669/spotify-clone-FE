@@ -13,7 +13,8 @@ const {
   isSuccess,
   isError,
   error
-} = useApi<PaginatedApiResponse<unknown>>({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+} = useApi<PaginatedApiResponse<any>>({
   dataFn: async(config) => await playlistsService.getPlaylists(config)
 })
 
