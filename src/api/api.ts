@@ -152,11 +152,10 @@ class ApiClient {
   }
 
   async get<T>(config: RequestConfig): Promise<ApiResult<T>> {
+    let query: string | undefined
 
-    let query: string | undefined;
-
-    if(config.urlParams) {
-      query = new URLSearchParams(config.urlParams).toString();
+    if (config.urlParams) {
+      query = new URLSearchParams(config.urlParams).toString()
     }
 
     return this.initRequest(`${config.endpoint}?${query}`, { ...config.options, method: 'GET' })
